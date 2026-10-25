@@ -11,3 +11,4 @@ beautifulsoup4>=4.12
 sse-starlette>=2.1
 cedarpy>=4.0
 python-multipart>=0.0.9
+uvicorn[standard]

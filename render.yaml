@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: tessera-core
+    runtime: docker
+    dockerContext: core
+    dockerfilePath: core/Dockerfile
+    plan: free
+    healthCheckPath: /health
+    autoDeploy: true
