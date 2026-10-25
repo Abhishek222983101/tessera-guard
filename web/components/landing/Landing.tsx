@@ -66,6 +66,16 @@ export default function Landing() {
         </div>
       </section>
 
+      <section id="standards" className="scroll-mt-20 border-y border-line py-8 bg-panel/40">
+        <div className="mx-auto max-w-[1240px] px-5">
+          <p className="mb-4 text-center text-[13px] uppercase tracking-[0.14em] text-faint">Built on open standards</p>
+          <div className="relative overflow-hidden [mask-image:linear-gradient(to_right,transparent,white_12%,white_88%,transparent)]">
+            <style>{`@keyframes lm{from{transform:translateX(0)}to{transform:translateX(-50%)}}.lm{animation:lm 36s linear infinite}@media (prefers-reduced-motion:reduce){.lm{animation:none}}`}</style>
+            <div className="lm flex w-max gap-3 text-[15px] text-muted">{[0, 1].map((k) => (<div key={k} className="flex gap-3" aria-hidden={k === 1}>{STANDARDS.map((s) => <span key={s + k} className="whitespace-nowrap rounded-full border border-line bg-panel px-4 py-1.5 font-medium text-bone/80">{s}</span>)}</div>))}</div>
+          </div>
+        </div>
+      </section>
+
       <section id="how" className="mx-auto max-w-[1240px] scroll-mt-20 px-5 py-8"><InkOrbitFeatures theme="dark" brand="Tessera" /></section>
 
       <section id="try" className="mx-auto max-w-[1240px] scroll-mt-20 px-5 py-20">
@@ -85,15 +95,6 @@ export default function Landing() {
         </div>
       </section>
 
-      <section id="standards" className="scroll-mt-20 border-y border-line py-10">
-        <div className="mx-auto max-w-[1240px] px-5">
-          <p className="mb-5 text-center text-[13px] uppercase tracking-[0.14em] text-faint">Built on open standards</p>
-          <div className="relative overflow-hidden [mask-image:linear-gradient(to_right,transparent,white_12%,white_88%,transparent)]">
-            <style>{`@keyframes lm{from{transform:translateX(0)}to{transform:translateX(-50%)}}.lm{animation:lm 36s linear infinite}@media (prefers-reduced-motion:reduce){.lm{animation:none}}`}</style>
-            <div className="lm flex w-max gap-14 text-[15px] text-muted">{[0, 1].map((k) => (<div key={k} className="flex gap-14" aria-hidden={k === 1}>{STANDARDS.map((s) => <span key={s + k} className="whitespace-nowrap font-medium">{s}</span>)}</div>))}</div>
-          </div>
-        </div>
-      </section>
 
       <ParadigmFooter />
     </div>
