@@ -191,7 +191,7 @@ Full build record: [`docs/BUILD-LOG.md`](docs/BUILD-LOG.md) · design plan: [`do
 - The optional LLM mode for agents and the quarantined LLM judge.
 - Real agent frameworks (LangGraph / OpenAI Agents SDK) and an MCP proxy in front of real tool servers.
 - Real identity binding (SPIFFE/SPIRE, RFC 8693 token exchange); the prototype models the handoff chain and host binding.
-- Hosted multi-user persistence: on Vercel the lab state lives in a warm serverless instance and resets if the platform recycles it or scales out under heavy parallel load; the console detects that and clears itself. Press **Shift+R** (or *Reset lab*) any time, and run `just up` locally for a fully stateful session.
+- Shared demo state: the lab is one shared world on a single always-on core (Render), so every visitor sees the same agents; each demo run starts from a clean agent. Press **Shift+R** (or *Reset lab*) any time. The core can take up to a minute to wake after long idle (a keepalive pings it every 10 min). Run `just up` for a fully local session.
 
 ## Future scope
 
@@ -205,7 +205,7 @@ Full build record: [`docs/BUILD-LOG.md`](docs/BUILD-LOG.md) · design plan: [`do
 
 ## Tech stack
 
-`Python 3.13` · `FastAPI` · `Cedar (cedarpy)` · `PyMuPDF` · `PyNaCl (Ed25519)` · `NumPy` · `RapidFuzz` · `Next.js 16 / React 19` · `Tailwind 4` · `shadcn/ui (Base UI)` · `react-isokit` (isometric figures) · `React Flow` · `React Three Fiber` · `Monaco` · deployed on **Vercel** (Next.js + Python FastAPI as two services, one URL).
+`Python 3.13` · `FastAPI` · `Cedar (cedarpy)` · `PyMuPDF` · `PyNaCl (Ed25519)` · `NumPy` · `RapidFuzz` · `Next.js 16 / React 19` · `Tailwind 4` · `shadcn/ui (Base UI)` · `react-isokit` (isometric figures) · `React Flow` · `React Three Fiber` · `Monaco` · web on **Vercel**, Python core on **Render** (Docker, single process).
 
 Standards the design lines up with: OWASP Top 10 for Agentic Applications (ASI tags on cases), AARM decisions (ALLOW / DENY / MODIFY / STEP_UP / DEFER), Cedar, RFC 8693 delegation, SPIFFE, OpenTelemetry GenAI.
 
