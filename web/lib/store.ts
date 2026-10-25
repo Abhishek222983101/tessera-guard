@@ -39,7 +39,7 @@ let dripping = false; const dripQ: { type: StreamEvent["type"]; data: unknown; s
 function drip(evs: { type: StreamEvent["type"]; data: unknown; seq: number }[]) {
   if (evs.length <= 1) { for (const e of evs) apply({ type: e.type, data: e.data } as StreamEvent, e.seq); return; }
   dripQ.push(...evs); if (dripping) return; dripping = true;
-  const step = () => { const e = dripQ.shift(); if (!e) { dripping = false; return; } apply({ type: e.type, data: e.data } as StreamEvent, e.seq); setTimeout(step, e.type === "verdict" ? 320 : 40); };
+  const step = () => { const e = dripQ.shift(); if (!e) { dripping = false; return; } apply({ type: e.type, data: e.data } as StreamEvent, e.seq); setTimeout(step, e.type === "verdict" ? Math.max(30, Math.min(320, 6500 / (dripQ.length + 1))) : 30); };
   step();
 }
 export function connect() {

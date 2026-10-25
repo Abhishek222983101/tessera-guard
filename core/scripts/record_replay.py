@@ -14,5 +14,7 @@ for e in evs:
     if ts: prev = ts
     out.append({"type": e["type"], "data": e["data"], "dt": dt})
 dest = sys.argv[1] if len(sys.argv) > 1 else "../web/lib/fixtures/s1.json"
-json.dump({"events": out, "recorded_from": "live core, scenario S1", "run_id": rid}, open(dest, "w"))
+case_id = next((e["data"]["id"] for e in evs if e["type"] == "case"), None)
+detail = c.get(f"/cases/{case_id}").json() if case_id else None
+json.dump({"events": out, "case": detail, "recorded_from": "live core, scenario S1", "run_id": rid}, open(dest, "w"))
 print(len(out), "events ->", dest)

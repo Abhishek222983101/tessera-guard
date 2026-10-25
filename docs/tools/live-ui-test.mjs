@@ -7,7 +7,7 @@ let pass = 0, fail = 0; const ok = (n, c) => { c ? pass++ : fail++; console.log(
 const has = async (re, t = 12000) => { try { await p.getByText(re).first().waitFor({ timeout: t }); return true; } catch { return false; } };
 await p.goto(B + "/", { waitUntil: "networkidle" });
 ok("landing shows headline", await has(/Wrong behaviour/));
-ok("isometric machine blocks the poisoned PDF", await has(/1 blocked|hidden order blocked/, 15000));
+ok("isometric machine blocks the poisoned PDF", await p.waitForFunction(() => [...document.querySelectorAll("svg text")].some((e) => /1 blocked/.test(e.textContent || "")), null, { timeout: 20000 }).then(() => true).catch(() => false));
 await p.getByRole("link", { name: /Open the lab/ }).click(); await p.waitForURL(/\/fleet/);
 await p.getByRole("link", { name: /Start here/ }).first().click(); await p.waitForURL(/\/guide/);
 await p.getByRole("button", { name: /^Run the attack/ }).click(); await p.waitForURL(/\/demo/, { timeout: 20000 });

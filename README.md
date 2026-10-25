@@ -88,7 +88,7 @@ Core challenges: valid credentials hide the attack · indirect prompt injection 
 7. **Red-team** — S5 mimicry; switch the deterministic layers off to see which layer was doing the work. S4 slow leak: held at about session 13 of 30.
 8. **Declared changes** (no false alarm for real change), **Agent chains** (taint and patient zero), **Role contracts** (edit, Dry-run, approval to widen), **Results**.
 
-The full, page-by-page script with what you should see at every step: **[`docs/TEST-PLAN.md`](docs/TEST-PLAN.md)**.
+The full, page-by-page script with what you should see at every step: **[`docs/TEST-PLAN.md`](docs/TEST-PLAN.md)**. For teammates: **[`docs/TESTING-GUIDE.pdf`](docs/TESTING-GUIDE.pdf)** (also [`.md`](docs/TESTING-GUIDE.md)) explains the idea, what every sidebar item does, and gives click-by-click steps, expected results and bugs-to-look-for for every page. Inside the app, the **Test this page** button (top right) shows the same steps for the page you are on.
 
 <details>
 <summary><b>Prove it is a real backend, not a mock-up</b></summary>

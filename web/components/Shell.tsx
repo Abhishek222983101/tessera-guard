@@ -6,6 +6,7 @@ import { connect, useStore, resetLocal } from "@/lib/store";
 import { post } from "@/lib/api";
 import { Logo } from "@/components/Logo";
 import { GUIDE, useGuideDone } from "@/lib/guide";
+import { guideForPath } from "@/lib/pageGuides";
 import { GuideCtxProvider, usePageGuide } from "@/components/ui/kit";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
@@ -30,7 +31,7 @@ function Inner({ children }: { children: React.ReactNode }) {
   const path = usePathname();
   const conn = useStore((s) => s.conn);
   const done = useGuideDone();
-  const guide = usePageGuide();
+  const registered = usePageGuide(); const guide = guideForPath(path) ?? registered;
   const [open, setOpen] = useState(false);
   const n = GUIDE.filter((g) => done[g.id]).length;
   useEffect(() => { connect(); }, []);
@@ -87,9 +88,12 @@ function Inner({ children }: { children: React.ReactNode }) {
           <SheetHeader className="border-b border-line p-5"><SheetTitle className="text-[17px] text-bone">Test this page</SheetTitle><SheetDescription className="text-[15px] text-muted">Steps to try, and what you should see.</SheetDescription></SheetHeader>
           <div className="space-y-6 p-5">
             {guide ? (<>
-              <ol className="space-y-3">{guide.steps.map((s, i) => (<li key={i} className="flex gap-3 text-[15px]"><span className="mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-full bg-panel3 text-[13px] font-medium text-muted">{i + 1}</span><span className="text-bone/90">{s.replace(/^Step \d+:\s*/i, "")}</span></li>))}</ol>
-              <div className="rounded-lg border border-moss/30 bg-mossbg p-3.5"><div className="mb-1 flex items-center gap-1.5 text-[13px] font-medium text-moss"><Check size={14} /> You should see</div><p className="text-[15px] leading-relaxed text-bone/90">{guide.expect}</p></div>
-            </>) : <p className="text-[15px] text-muted">No steps for this page. Use the full checklist.</p>}
+              {"goal" in guide && guide.goal && <div><div className="mb-1 text-[12px] font-medium uppercase tracking-wider text-faint">Goal</div><p className="text-[15px] text-bone/90">{guide.goal}</p></div>}
+              <div><div className="mb-2 text-[12px] font-medium uppercase tracking-wider text-faint">Do this</div>
+                <ol className="space-y-3">{guide.steps.map((s, i) => (<li key={i} className="flex gap-3 text-[15px]"><span className="mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-full bg-panel3 text-[12px] font-medium text-muted">{i + 1}</span><span className="text-bone/90">{s.replace(/^Step \d+:\s*/i, "")}</span></li>))}</ol></div>
+              <div className="rounded-lg border border-moss/30 bg-mossbg p-3.5"><div className="mb-1 flex items-center gap-1.5 text-[13px] font-medium text-moss"><Check size={14} /> You should see</div><p className="text-[14px] leading-relaxed text-bone/90">{guide.expect}</p></div>
+              {"watch" in guide && guide.watch?.length > 0 && <div className="rounded-lg border border-amber/30 bg-amberbg p-3.5"><div className="mb-1.5 text-[13px] font-medium text-amber">Bugs to look for</div><ul className="list-disc space-y-1 pl-5 text-[14px] text-bone/90">{guide.watch.map((w) => <li key={w}>{w}</li>)}</ul></div>}
+            </>) : <p className="text-[14px] text-muted">No steps for this page. Use the full checklist.</p>}
             <Link href="/guide" onClick={() => setOpen(false)} className="btn btn-ghost w-full">Open the full checklist ({n}/{GUIDE.length})</Link>
           </div>
         </SheetContent>
