@@ -1,0 +1,14 @@
+node_modules/
+.next/
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+core/data/
+.vercel/
+.env*
+*.log
+.DS_Store
+web/tsconfig.tsbuildinfo
+.vercel
+docs/phase-shots/

@@ -1,0 +1,340 @@
+{
+ "commit": "ae5ea3b64e",
+ "seed": 1337,
+ "generated_at": 1792885695.3797684,
+ "duration_s": 79.0,
+ "quick": false,
+ "tags": {
+  "MEASURED": "computed by tessera.eval on the simulator at this commit and seed",
+  "TARGET": "design goal, not yet measured"
+ },
+ "limits": [
+  "Synthetic benign traffic and puppet attackers authored by us",
+  "Sim-to-real gap not measured",
+  "Python reference gateway; the production gateway targets Rust"
+ ],
+ "calibration_note": "label = the step belongs to a session under attack (not per-step ground truth); this shows how risk bands separate attacked from normal sessions, it is not a probability calibration",
+ "metrics": [
+  {
+   "id": "false_alerts_per_1000",
+   "name": "False alerts per 1,000 benign steps",
+   "value": 0.0,
+   "unit": "per 1k",
+   "tag": "MEASURED",
+   "n": 4136,
+   "note": "risk \u2265 60 or DENY on normal traffic (policy-required approvals excluded)"
+  },
+  {
+   "id": "benign_elevated_rate",
+   "name": "Benign steps scoring \u2265 30 (elevated)",
+   "value": 0.0,
+   "unit": "%",
+   "tag": "MEASURED",
+   "n": 4136,
+   "note": "learned layers alone never block"
+  },
+  {
+   "id": "policy_stepups",
+   "name": "Policy-required approvals on benign traffic",
+   "value": 2.51,
+   "unit": "%",
+   "tag": "MEASURED",
+   "n": 4136,
+   "note": "e.g. purchase request above INR 250k \u2014 by contract, not by detection"
+  },
+  {
+   "id": "gateway_p50_ms",
+   "name": "Gateway decision latency p50",
+   "value": 1.9,
+   "unit": "ms",
+   "tag": "MEASURED",
+   "n": 2000,
+   "note": "Python reference implementation incl. Cedar; production target is Rust < 5 ms"
+  },
+  {
+   "id": "gateway_p95_ms",
+   "name": "Gateway decision latency p95",
+   "value": 3.06,
+   "unit": "ms",
+   "tag": "MEASURED",
+   "n": 2000,
+   "note": ""
+  },
+  {
+   "id": "gateway_p99_ms",
+   "name": "Gateway decision latency p99",
+   "value": 3.75,
+   "unit": "ms",
+   "tag": "MEASURED",
+   "n": 2000,
+   "note": ""
+  },
+  {
+   "id": "attack_blocked_rate",
+   "name": "Attacker steps blocked or flagged high (S1,S3,S5,S6,S8)",
+   "value": 90.0,
+   "unit": "%",
+   "tag": "MEASURED",
+   "n": 36,
+   "note": "attacker-initiated steps (mimicry cover steps excluded); blocked, held, or executed but scored \u2265 60"
+  },
+  {
+   "id": "utility_retention",
+   "name": "Legitimate steps completed during attack",
+   "value": 80.0,
+   "unit": "%",
+   "tag": "MEASURED",
+   "n": 4,
+   "note": "S1,S2,S5,S8; excludes steps waiting for a human approval"
+  },
+  {
+   "id": "exfil_with_iam_only",
+   "name": "Data leaves when only classic IAM is on (S1)",
+   "value": 100.0,
+   "unit": "% of runs",
+   "tag": "MEASURED",
+   "n": 5,
+   "note": ""
+  },
+  {
+   "id": "slow_ramp_caught_session",
+   "name": "Slow-ramp leak held at session",
+   "value": 13,
+   "unit": "of 30",
+   "tag": "MEASURED",
+   "n": 1,
+   "note": "CUSUM + rolling egress budget"
+  },
+  {
+   "id": "slow_ramp_no_drift_layer",
+   "name": "Slow-ramp held with drift layer OFF",
+   "value": 30,
+   "unit": "of 30",
+   "tag": "MEASURED",
+   "n": 1,
+   "note": "30 = never held within the 30-session run"
+  }
+ ],
+ "ablation": [
+  {
+   "layer_off": "none (all layers on)",
+   "kind": "baseline",
+   "blocked_rate": 1.0,
+   "utility": 0.8,
+   "exfil_rate": 0.0
+  },
+  {
+   "layer_off": "contract",
+   "kind": "leave_one_out",
+   "blocked_rate": 1.0,
+   "utility": 0.8,
+   "exfil_rate": 0.0
+  },
+  {
+   "layer_off": "provenance",
+   "kind": "leave_one_out",
+   "blocked_rate": 1.0,
+   "utility": 0.8,
+   "exfil_rate": 0.0
+  },
+  {
+   "layer_off": "decoy",
+   "kind": "leave_one_out",
+   "blocked_rate": 1.0,
+   "utility": 0.8,
+   "exfil_rate": 0.0
+  },
+  {
+   "layer_off": "content",
+   "kind": "leave_one_out",
+   "blocked_rate": 1.0,
+   "utility": 0.8,
+   "exfil_rate": 0.0
+  },
+  {
+   "layer_off": "chain",
+   "kind": "leave_one_out",
+   "blocked_rate": 1.0,
+   "utility": 0.8,
+   "exfil_rate": 0.0
+  },
+  {
+   "layer_off": "context",
+   "kind": "leave_one_out",
+   "blocked_rate": 0.875,
+   "utility": 0.8,
+   "exfil_rate": 0.0
+  },
+  {
+   "layer_off": "sequence",
+   "kind": "leave_one_out",
+   "blocked_rate": 1.0,
+   "utility": 0.8,
+   "exfil_rate": 0.0
+  },
+  {
+   "layer_off": "params",
+   "kind": "leave_one_out",
+   "blocked_rate": 1.0,
+   "utility": 0.8,
+   "exfil_rate": 0.0
+  },
+  {
+   "layer_off": "intent",
+   "kind": "leave_one_out",
+   "blocked_rate": 1.0,
+   "utility": 0.8,
+   "exfil_rate": 0.0
+  },
+  {
+   "layer_off": "drift",
+   "kind": "leave_one_out",
+   "blocked_rate": 1.0,
+   "utility": 0.8,
+   "exfil_rate": 0.0
+  },
+  {
+   "layer_off": "all learned layers",
+   "kind": "group_off",
+   "blocked_rate": 1.0,
+   "utility": 0.8,
+   "exfil_rate": 0.0
+  },
+  {
+   "layer_off": "all deterministic layers",
+   "kind": "group_off",
+   "blocked_rate": 0.125,
+   "utility": 1.0,
+   "exfil_rate": 1.0
+  },
+  {
+   "layer_off": "ONLY contract",
+   "kind": "only",
+   "blocked_rate": 0.875,
+   "utility": 0.6,
+   "exfil_rate": 0.0
+  },
+  {
+   "layer_off": "ONLY provenance",
+   "kind": "only",
+   "blocked_rate": 0.25,
+   "utility": 0.8,
+   "exfil_rate": 0.333
+  },
+  {
+   "layer_off": "ONLY content",
+   "kind": "only",
+   "blocked_rate": 0.0,
+   "utility": 0.6,
+   "exfil_rate": 1.0
+  },
+  {
+   "layer_off": "ONLY learned layers",
+   "kind": "only",
+   "blocked_rate": 0.125,
+   "utility": 1.0,
+   "exfil_rate": 1.0
+  },
+  {
+   "layer_off": "ONLY decoy",
+   "kind": "only",
+   "blocked_rate": 0.25,
+   "utility": 1.0,
+   "exfil_rate": 0.667
+  }
+ ],
+ "cold_start": [
+  {
+   "n_sessions": 0,
+   "detect_rate": 0.0
+  },
+  {
+   "n_sessions": 2,
+   "detect_rate": 0.0
+  },
+  {
+   "n_sessions": 5,
+   "detect_rate": 0.0
+  },
+  {
+   "n_sessions": 10,
+   "detect_rate": 1.0
+  },
+  {
+   "n_sessions": 15,
+   "detect_rate": 1.0
+  },
+  {
+   "n_sessions": 20,
+   "detect_rate": 1.0
+  },
+  {
+   "n_sessions": 40,
+   "detect_rate": 1.0
+  }
+ ],
+ "calibration": [
+  {
+   "bin": "0-20",
+   "pred": 0.05,
+   "obs": 0.126,
+   "n": 4729
+  },
+  {
+   "bin": "20-40",
+   "pred": 0.253,
+   "obs": 0.97,
+   "n": 164
+  },
+  {
+   "bin": "40-60",
+   "pred": 0.575,
+   "obs": 1.0,
+   "n": 33
+  },
+  {
+   "bin": "60-80",
+   "pred": 0.654,
+   "obs": 1.0,
+   "n": 110
+  },
+  {
+   "bin": "80-100",
+   "pred": 0.964,
+   "obs": 1.0,
+   "n": 167
+  }
+ ],
+ "adaptive": [
+  {
+   "attacker": "adaptive (retries after a block)",
+   "success_rate": 0.0,
+   "n": 10
+  },
+  {
+   "attacker": "mimicry (all layers on)",
+   "success_rate": 0.0,
+   "n": 10
+  },
+  {
+   "attacker": "mimicry (contract+provenance+decoy+content OFF: learned layers only)",
+   "success_rate": 1.0,
+   "n": 10
+  }
+ ],
+ "latency": {
+  "p50": 1.9,
+  "p95": 3.06,
+  "p99": 3.75
+ },
+ "targets": [
+  {
+   "id": "rust_gateway_p95",
+   "name": "Rust gateway p95 decision latency",
+   "value": 5,
+   "unit": "ms",
+   "tag": "TARGET",
+   "note": "production design goal"
+  }
+ ]
+}

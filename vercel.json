@@ -1,0 +1,10 @@
+{
+  "services": {
+    "web": { "root": "web/", "framework": "nextjs" },
+    "api": { "root": "core/", "entrypoint": "tessera.api.app:app", "framework": "fastapi" }
+  },
+  "rewrites": [
+    { "source": "/server/(.*)", "destination": { "service": "api" } },
+    { "source": "/(.*)", "destination": { "service": "web" } }
+  ]
+}

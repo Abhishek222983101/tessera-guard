@@ -1,0 +1,13 @@
+import { chromium } from "/home/arch-nitro/d3coy/tessera-lab/web/node_modules/playwright-core/index.mjs";
+const b = await chromium.launch({ executablePath: "/usr/bin/google-chrome-stable", args: ["--no-sandbox","--use-gl=angle","--use-angle=swiftshader","--enable-unsafe-swiftshader"] });
+const p = await b.newPage({ viewport: { width: 1920, height: 1080 } });
+p.on("pageerror", e => console.log("PAGEERR", e.message.slice(0,200)));
+await fetch("http://localhost:8080/reset", {method:"POST"});
+await p.goto("http://localhost:3000/"); await p.waitForTimeout(2000);
+await p.getByRole("button", { name: /3D/ }).click().catch(e=>console.log("no 3d btn"));
+await fetch("http://localhost:8080/scenarios/S1/run", {method:"POST", headers:{"content-type":"application/json"}, body: JSON.stringify({pace:0.35})});
+await p.waitForTimeout(6500);
+await p.screenshot({ path: "/home/arch-nitro/d3coy/tessera-lab/docs/phase-shots/I-fleet-3d-live.png" });
+await p.goto("http://localhost:3000/demo"); await p.waitForTimeout(3000);
+await p.screenshot({ path: "/home/arch-nitro/d3coy/tessera-lab/docs/phase-shots/I-demo.png" });
+await b.close();
