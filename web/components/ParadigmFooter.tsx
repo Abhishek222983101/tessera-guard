@@ -9,7 +9,7 @@ export default function ParadigmFooter() {
   const [ff, setFf] = useState("Helvetica, Arial, sans-serif");
   const conn = useStore((s) => s.conn);
   useEffect(() => { setFf(getComputedStyle(document.body).fontFamily); }, []);
-  const live = conn === "live";
+  const live = conn === "live"; const wait = conn === "connecting" || conn === "polling";
   return (
     <HalftoneWordmarkFooter
       wordmark="paradigm" fontFamily={ff} monoFamily={ff} height="620px" crop={0.0}
@@ -20,7 +20,7 @@ export default function ParadigmFooter() {
         { title: "Evidence", links: [{ label: "Measured results", href: "/bench" }, { label: "Role contracts", href: "/contracts" }, { label: "Agent chains", href: "/chains" }, { label: "What's real", href: "/about" }] },
         { title: "The idea", links: [{ label: "Valid token" }, { label: "Wrong behaviour" }, { label: "Caught, explained" }, { label: "Contained, not stopped" }] },
       ]}
-      status={<span className="inline-flex items-center gap-2"><LogoMark size={16} /><span className="inline-block h-2 w-2 rounded-full" style={{ background: live ? "#3fb27f" : "#f5b83d" }} />{live ? "Core live · all systems simulated" : "Core offline · recorded replay available"}</span>}
+      status={<span className="inline-flex items-center gap-2"><LogoMark size={16} /><span className="inline-block h-2 w-2 rounded-full" style={{ background: live ? "#3fb27f" : "#f5b83d" }} />{live ? "Core live · all systems simulated" : wait ? "Connecting to core…" : "Core offline · recorded replay available"}</span>}
     />
   );
 }
