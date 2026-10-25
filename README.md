@@ -105,6 +105,11 @@ The API contract is in [`contracts/API.md`](contracts/API.md).
 
 ---
 
+### Deployment verification
+
+The deployed site was driven end to end in a real browser by [`docs/tools/live-ui-test.mjs`](docs/tools/live-ui-test.mjs): landing page and isometric machine → Start here → run S1 → demo shows *Blocked* and *4 of 5 steps* → Fleet *Attack stopped* → **Approve** the held action → open the case → hidden text and score breakdown → **tamper a receipt and detect it** → Attack Lab (poisoned quote stopped) → Stolen token (access check allowed, TESSERA blocks) → Agent chains (patient zero named) → Role contracts (Cedar compiles) → Results (MEASURED tags) → Agent page (working-hours clock).
+**15 / 15 checks pass, 0 page errors** (`B=https://tessera-guard.vercel.app node docs/tools/live-ui-test.mjs`). Backend: 39/39 tests (`just test`).
+
 ## What is happening inside
 
 ```

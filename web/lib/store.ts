@@ -1,6 +1,6 @@
 "use client";
 import { useSyncExternalStore } from "react";
-import { API } from "./api";
+import { API, api } from "./api";
 import type { Verdict, Case, StreamEvent } from "./types";
 
 export interface Approval { id: string; status: "pending"|"approved"|"rejected"; verdict_id: string; agent_id: string; tool: string; args: Record<string, unknown>; risk: number }
@@ -33,11 +33,20 @@ export function apply(ev: StreamEvent, seq?: number) {
 }
 
 let es: EventSource | null = null; let poll: ReturnType<typeof setInterval> | null = null; let started = false;
+// serverless runs finish inside one request, so their events arrive together; replay them a beat apart so the feed still feels live
+let pollSeq = 0;
+let dripping = false; const dripQ: { type: StreamEvent["type"]; data: unknown; seq: number }[] = [];
+function drip(evs: { type: StreamEvent["type"]; data: unknown; seq: number }[]) {
+  if (evs.length <= 1) { for (const e of evs) apply({ type: e.type, data: e.data } as StreamEvent, e.seq); return; }
+  dripQ.push(...evs); if (dripping) return; dripping = true;
+  const step = () => { const e = dripQ.shift(); if (!e) { dripping = false; return; } apply({ type: e.type, data: e.data } as StreamEvent, e.seq); setTimeout(step, e.type === "verdict" ? 320 : 40); };
+  step();
+}
 export function connect() {
   if (started || typeof window === "undefined") return; started = true;
   // hydrate recent history first so the console is never empty when you open it mid-run
-  fetch(`${API}/events?since=0&limit=2000`, { cache: "no-store" }).then((r) => r.ok ? r.json() : null).then((j) => {
-    if (j?.events) for (const e of j.events) apply({ type: e.type, data: e.data } as StreamEvent, e.seq);
+  api<{ events: { type: StreamEvent["type"]; data: unknown; seq: number }[]; last_seq: number }>("/events?since=0&limit=2000").then((j) => {
+    if (j?.events) { for (const e of j.events) apply({ type: e.type, data: e.data } as StreamEvent, e.seq); pollSeq = j.last_seq ?? state.seq; }
   }).catch(() => {}).finally(() => open());
   const open = () => {
     if (process.env.NEXT_PUBLIC_MOCK === "1") { set({ conn: "replay" }); import("./mock").then((m) => m.runFixture(6)); return; }
@@ -49,9 +58,9 @@ export function connect() {
     es.onerror = () => { es?.close(); set({ conn: "polling" }); startPoll(); setTimeout(open, 3000); };
   };
   const startPoll = () => { if (poll) return; poll = setInterval(async () => {
-    try { const r = await fetch(`${API}/events?since=${state.seq}&limit=500`, { cache: "no-store" }); if (!r.ok) throw 0; const j = await r.json();
-      if (typeof j.last_seq === "number" && j.last_seq < state.seq) { resetLocal(); state = { ...state, seq: 0 }; return; }   // the server instance restarted: drop phantom rows
-      for (const e of j.events) apply({ type: e.type, data: e.data } as StreamEvent, e.seq); if (process.env.NEXT_PUBLIC_POLL === "1") set({ conn: "live" }); else if (j.events.length) set({ conn: "polling" }); } catch { set({ conn: "offline" }); } }, process.env.NEXT_PUBLIC_POLL === "1" ? 1800 : 2000); };
+    try { const j = await api<{ events: { type: StreamEvent["type"]; data: unknown; seq: number }[]; last_seq: number }>(`/events?since=${pollSeq}&limit=500`);
+      if (typeof j.last_seq === "number" && j.last_seq < pollSeq) { resetLocal(); state = { ...state, seq: 0 }; pollSeq = 0; return; }   // the server instance restarted: drop phantom rows
+      if (j.events.length) pollSeq = j.events[j.events.length - 1].seq; drip(j.events); if (process.env.NEXT_PUBLIC_POLL === "1") set({ conn: "live" }); else if (j.events.length) set({ conn: "polling" }); } catch { set({ conn: "offline" }); } }, process.env.NEXT_PUBLIC_POLL === "1" ? 1800 : 2000); };
 }
 /** Offline/fallback: feed a recorded NDJSON of stream events at `speed`x. */
 export async function replay(events: { type: StreamEvent["type"]; data: unknown; dt?: number }[], speed = 1) {

@@ -5,7 +5,16 @@ export class ApiError extends Error {
   constructor(public status: number, public code: string, message: string, public details?: unknown[]) { super(message); }
 }
 
-export async function api<T = unknown>(path: string, init?: RequestInit & { json?: unknown }): Promise<T> {
+// On serverless hosting every concurrent request can land on a different instance (and a different in-memory lab). One tab therefore sends API calls strictly one at a time.
+let chain: Promise<unknown> = Promise.resolve();
+const SERIAL = process.env.NEXT_PUBLIC_POLL === "1";
+export function api<T = unknown>(path: string, init?: RequestInit & { json?: unknown }): Promise<T> {
+  if (!SERIAL) return rawApi<T>(path, init);
+  const p = chain.then(() => rawApi<T>(path, init), () => rawApi<T>(path, init));
+  chain = p.catch(() => undefined);
+  return p;
+}
+async function rawApi<T = unknown>(path: string, init?: RequestInit & { json?: unknown }): Promise<T> {
   const headers: Record<string, string> = {};
   let body = init?.body;
   if (init?.json !== undefined) { headers["content-type"] = "application/json"; body = JSON.stringify(init.json); }
