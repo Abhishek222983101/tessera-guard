@@ -4,7 +4,7 @@
 Press **Shift+R** (or "Reset lab", bottom-left of the sidebar) before each section to start clean. Each page also has a **Test this page** button (top right) with the same steps and what you should see. The sidebar's **Start here** page is a 14-item checklist that ticks itself off as you go.
 
 ## 0. Sanity (30 s)
-- Open `/server/health` → `{"ok":true,"cedar":"ok",...}`. That is the real policy engine answering.
+- Open https://tessera-core.onrender.com/health → `{"ok":true,"cedar":"ok",...}`. That is the real policy engine answering.
 - Open `/` → the landing page. The isometric machine loops by itself every few seconds.
 
 ## 1. Landing page — `/`

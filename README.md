@@ -79,11 +79,11 @@ Core challenges: valid credentials hide the attack · indirect prompt injection 
 
 **https://tessera-guard.vercel.app** — then follow the numbered route (the site also guides you: sidebar → **Start here**).
 
-1. **Landing page** — watch the isometric machine loop: a quote goes through the gateway to ERP (`200`), a poisoned PDF is blocked (`1 blocked`).
+1. **Landing page** — the "Built on open standards" strip sits under the hero; watch the isometric machine loop: a quote goes through the gateway to ERP (`200`), a poisoned PDF is blocked (`1 blocked`).
 2. **Open the lab → Live demo → S1** — the left column ("Access check") stays green on every row; the right column ("TESSERA") goes red on the HR read and the outbound POST. The gauge climbs to ~99, the ladder moves to L2, and the progress bar says **4 of 5 steps finished · 1 waiting for you**.
 3. **Fleet → Approve** — release the held purchase request. It runs.
 4. **Cases → the S1 case** — hover the red box on the PDF: a line shows the action it caused. Open **Why** and **What would make this OK**. **Receipts → Tamper → Verify**: verification fails at exactly that row.
-5. **Attack Lab** — run with **Protection off** and see *Data left the building*. Then **Write** your own hidden instruction and watch it get caught.
+5. **Attack Lab** — no file to upload? The **Upload** tab has one-click sample files (poisoned quote, invoice, web page, plus clean ones). Run with **Protection off** and see *Data left the building*. Then **Write** your own hidden instruction and watch it get caught.
 6. **Stolen token → Stay under the radar** — allowed, but flagged high (valid token, unfamiliar host, 03:00).
 7. **Red-team** — S5 mimicry; switch the deterministic layers off to see which layer was doing the work. S4 slow leak: held at about session 13 of 30.
 8. **Declared changes** (no false alarm for real change), **Agent chains** (taint and patient zero), **Role contracts** (edit, Dry-run, approval to widen), **Results**.
@@ -94,11 +94,11 @@ The full, page-by-page script with what you should see at every step: **[`docs/T
 <summary><b>Prove it is a real backend, not a mock-up</b></summary>
 
 ```bash
-curl https://tessera-guard.vercel.app/server/health            # Cedar engine answering
-curl https://tessera-guard.vercel.app/server/tools             # the tool catalogue (effect, data class, control args)
-curl -X POST https://tessera-guard.vercel.app/server/scenarios/S1/run -H 'content-type: application/json' -d '{"pace":0}'
-curl https://tessera-guard.vercel.app/server/cases             # the case S1 just opened
-curl https://tessera-guard.vercel.app/server/receipts/verify   # signed, hash-chained receipts
+curl https://tessera-core.onrender.com/health            # Cedar engine answering
+curl https://tessera-core.onrender.com/tools             # the tool catalogue (effect, data class, control args)
+curl -X POST https://tessera-core.onrender.com/scenarios/S1/run -H 'content-type: application/json' -d '{"pace":0}'
+curl https://tessera-core.onrender.com/cases             # the case S1 just opened
+curl https://tessera-core.onrender.com/receipts/verify   # signed, hash-chained receipts
 ```
 The API contract is in [`contracts/API.md`](contracts/API.md).
 </details>
@@ -108,7 +108,7 @@ The API contract is in [`contracts/API.md`](contracts/API.md).
 ### Deployment verification
 
 The deployed site was driven end to end in a real browser by [`docs/tools/live-ui-test.mjs`](docs/tools/live-ui-test.mjs): landing page and isometric machine → Start here → run S1 → demo shows *Blocked* and *4 of 5 steps* → Fleet *Attack stopped* → **Approve** the held action → open the case → hidden text and score breakdown → **tamper a receipt and detect it** → Attack Lab (poisoned quote stopped) → Stolen token (access check allowed, TESSERA blocks) → Agent chains (patient zero named) → Role contracts (Cedar compiles) → Results (MEASURED tags) → Agent page (working-hours clock).
-**15 / 15 checks pass, 0 page errors** (`B=https://tessera-guard.vercel.app node docs/tools/live-ui-test.mjs`). Backend: 39/39 tests (`just test`).
+**15 / 15 checks pass, 0 page errors** (repeated 10 times back to back against the live site after moving the core to a single always-on process; 9 of the 10 outputs were captured, all 15/15) (`B=https://tessera-guard.vercel.app node docs/tools/live-ui-test.mjs`). Backend: 39/39 tests (`just test`).
 
 ## What is happening inside
 
@@ -178,9 +178,9 @@ Agents (puppet workers in the sandbox company)
 | PR3 Scenarios | Hijackable puppet agents, scenarios **S1–S8**, adaptive and mimicry attackers, agent chains with inherited taint |
 | PR4 Learning | Markov twin with role→agent shrinkage, envelopes, intent probe, CUSUM/PSI/budgets, cold start, change windows |
 | PR5 Evidence | Fusion + floors + learned-only cap, waterfall, counterfactuals, signed receipts |
-| PR6–PR8 Console | Fleet, Case Board with PDF thread, Attack Lab, Stolen-token lab, Role-contract studio, Declared changes, Chains, Red-team with layer ablation, Live demo |
+| PR6–PR8 Console | Fleet, Case Board with PDF thread, Attack Lab, Stolen-token lab, Role-contract studio, Declared changes, Chains, Red-team with layer ablation, Live demo (flowchart that builds step by step as the agent acts, result pop-up, replay) |
 | PR9 Evaluation | Benchmark harness: false alerts, latency, blocked, utility, ablation, cold-start curve, adaptive attackers |
-| PR10 Hardening | API fuzzing, upload/YAML/regex limits, dependency audit, recorded replay fallback, deployment |
+| PR10 Hardening | API fuzzing, upload/YAML/regex limits, dependency audit, recorded replay fallback, deployment (web on Vercel, core on Render), sample files for every upload, per-run clean agent so repeated demos behave the same |
 
 Full build record: [`docs/BUILD-LOG.md`](docs/BUILD-LOG.md) · design plan: [`docs/PROTOTYPE-BUILD-PLAN.md`](docs/PROTOTYPE-BUILD-PLAN.md) · production design: [`docs/SYSTEM-ARCHITECTURE.md`](docs/SYSTEM-ARCHITECTURE.md).
 
@@ -226,7 +226,9 @@ core/                 Python core (FastAPI)
 web/                  Next.js console (landing, guide, demo, fleet, cases, lab, …)
 contracts/API.md      the frozen API contract
 docs/                 TEST-PLAN, BUILD-LOG, architecture, build plan, diagrams, screenshots
-vercel.json           two services (web + api) behind one URL
+render.yaml + core/Dockerfile   the always-on Python core (Render)
+vercel.json           web console on Vercel
+.github/workflows/keepalive.yml   pings the core every 10 min so it stays awake
 ```
 
 ## Run it yourself

@@ -40,7 +40,7 @@ This guide tells you what the project is, what every item in the sidebar does, a
 | **Agents** | The four protected agents (Procurement, Support, Finance AP, Research) plus create-a-new-agent (no history). Each agent page has a working-hours clock, learned behaviour and drift charts. |
 | **Cases** | Every alert. A case page shows the source of the attack, step timeline, why the score is what it is, the containment ladder, a data-flow map and signed receipts you can tamper with. |
 | **Agent chains** | Isometric map of the fleet. Shows how a poisoned agent infects another through a handoff; names patient zero; freeze the cascade. |
-| **Attack Lab** | You choose the agent and the document (library, text you write, or a PDF you upload). Switch Protection off to see what happens without TESSERA. |
+| **Attack Lab** | You choose the agent and the document (library, text you write, or a PDF you upload; the Upload tab has one-click sample files if you have none). Switch Protection off to see what happens without TESSERA. |
 | **Stolen token** | You play the attacker holding a valid token. The page shows what today's access check says vs what TESSERA says. |
 | **Red-team** | Smart attackers (mimicry, slow leak, stolen token) and switches to turn each detection layer off, so you see which layer actually stopped the attack. |
 | **Role contracts** | The agent's declared job as editable text. See the compiled Cedar policy, dry-run a change against past sessions, approvals needed to widen access. |
