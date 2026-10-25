@@ -507,6 +507,7 @@ def _check_layers(ls: list[str]) -> set:
 def _fresh(aid: str):
     """A new demo run starts from a clean agent: earlier visitors' quarantines must not leak into this one."""
     a = ID.REGISTRY.get(aid)
+    STORE.reset_drift(aid)
     if a and (a.killed or GW.cont.agent[aid] >= 3):
         with GLOCK:
             GW.release(aid, "auto-reset for new run")

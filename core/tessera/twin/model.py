@@ -235,6 +235,13 @@ class TwinStore:
             self.agents[agent_id] = a
         return self.agents[agent_id]
 
+    def reset_drift(self, agent_id: str):
+        """Forget cross-session drift evidence so a repeated demo run starts as the first one did."""
+        a = self.agents.get(agent_id)
+        if a:
+            a.cusum, a.cusum_b, a.cusum_s, a.alarm = 0.0, 0.0, 0.0, False
+            a.env_shift.clear(); a.recent_toks.clear()
+
     # ---------------- scoring
     def score(self, agent: AgentTwin, f: dict, prev2: str, prev1: str, session: dict, changes: list[Any]) -> list[Signal]:
         rm = self.roles[agent.role]
