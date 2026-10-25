@@ -504,6 +504,14 @@ def _check_layers(ls: list[str]) -> set:
     return set(ls)
 
 
+def _fresh(aid: str):
+    """A new demo run starts from a clean agent: earlier visitors' quarantines must not leak into this one."""
+    a = ID.REGISTRY.get(aid)
+    if a and (a.killed or GW.cont.agent[aid] >= 3):
+        with GLOCK:
+            GW.release(aid, "auto-reset for new run")
+
+
 @app.post("/scenarios/{sid}/run")
 def run_scenario(sid: str, b: RunBody = Body(default=RunBody())):
     if sid not in {s["id"] for s in SC.SCENARIOS}:
@@ -511,6 +519,7 @@ def run_scenario(sid: str, b: RunBody = Body(default=RunBody())):
     if b.protection not in ("tessera", "iam_only"):
         raise Err(422, "bad_protection", "protection must be tessera or iam_only")
     _busy()
+    _fresh(next(x["agent_id"] for x in SC.SCENARIOS if x["id"] == sid))
     r = SC.run_scenario(sid, b.attacker or "static", _check_layers(b.disabled_layers), min(1.0, max(0.0, b.gullibility)), b.protection, min(1.0, max(0.0, b.pace)), b.declared)
     return {"run_id": r.id}
 
@@ -533,6 +542,7 @@ def lab_run(b: LabBody):
     if b.protection not in ("tessera", "iam_only"):
         raise Err(422, "bad_protection", "protection must be tessera or iam_only")
     _busy()
+    _fresh(b.agent_id)
     r = SC.lab_run(b.agent_id, b.document_id, b.task, min(1.0, max(0.0, b.gullibility)), _check_layers(b.disabled_layers), b.protection, min(1.0, max(0.0, b.pace)))
     return {"run_id": r.id}
 
