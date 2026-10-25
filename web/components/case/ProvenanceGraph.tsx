@@ -26,9 +26,9 @@ const nodeTypes = { card: Card };
 const SRC_TAG: Record<string, string> = { user: "You asked", trusted_tool: "Trusted system", untrusted_chunk: "Untrusted text", mixed: "Mixed" };
 
 /** Source → argument → action. Colour = trust of the source; thick line = the value decided where the action went. */
-export default function ProvenanceGraph({ verdicts, chunkLabels, selectedId, onSelect }: { verdicts: Verdict[]; chunkLabels?: Record<string, string>; selectedId?: string | null; onSelect?: (id: string) => void }) {
+export default function ProvenanceGraph({ verdicts, chunkLabels, selectedId, onSelect, all = false }: { verdicts: Verdict[]; chunkLabels?: Record<string, string>; selectedId?: string | null; onSelect?: (id: string) => void; all?: boolean }) {
   const { nodes, edges } = useMemo(() => {
-    const g = new dagre.graphlib.Graph(); g.setGraph({ rankdir: "LR", nodesep: 28, ranksep: 130 }); g.setDefaultEdgeLabel(() => ({}));
+    const g = new dagre.graphlib.Graph(); g.setGraph(all ? { rankdir: "TB", nodesep: 60, ranksep: 44 } : { rankdir: "LR", nodesep: 28, ranksep: 130 }); g.setDefaultEdgeLabel(() => ({}));
     const N: Node<D>[] = [], E: Edge[] = []; const seen = new Set<string>();
     const add = (id: string, d: D) => { if (seen.has(id)) return; seen.add(id); g.setNode(id, { width: NW, height: NH }); N.push({ id, type: "card", position: { x: 0, y: 0 }, data: d, draggable: false }); };
     for (const v of verdicts) {
@@ -45,10 +45,14 @@ export default function ProvenanceGraph({ verdicts, chunkLabels, selectedId, onS
         g.setEdge(sid, aid);
       }
     }
+    if (all) {  // live view: also chain the steps in order so the flowchart grows with every action
+      for (let i = 1; i < verdicts.length; i++) { const a = "act:" + verdicts[i - 1].id, b = "act:" + verdicts[i].id;
+        E.push({ id: `seq:${a}>${b}`, source: a, target: b, style: { stroke: "var(--line-2)", strokeWidth: 1.2 }, markerEnd: { type: MarkerType.ArrowClosed, color: "var(--faint)", width: 14, height: 14 } }); g.setEdge(a, b); }
+    }
     dagre.layout(g); for (const n of N) { const p = g.node(n.id); n.position = { x: p.x - NW / 2, y: p.y - NH / 2 }; }
     return { nodes: N, edges: E };
-  }, [verdicts, chunkLabels, selectedId]);
-  if (!edges.length) return <div className="flex h-full items-center justify-center text-[15px] text-muted">No data flowed between sources and actions.</div>;
+  }, [verdicts, chunkLabels, selectedId, all]);
+  if (!nodes.length) return <div className="flex h-full items-center justify-center text-[15px] text-muted">No data flowed between sources and actions.</div>;
   return (
     <div className="flex h-full w-full flex-col" aria-label="Provenance graph: where each argument came from">
       <div className="flex flex-wrap items-center gap-4 px-4 pt-3 text-[13px] text-muted">
@@ -58,7 +62,7 @@ export default function ProvenanceGraph({ verdicts, chunkLabels, selectedId, onS
         <span className="flex items-center gap-1.5"><i className="inline-block w-5 border-t border-dashed border-bone" />Just content</span>
       </div>
       <div className="min-h-0 flex-1">
-        <ReactFlow nodes={nodes} edges={edges} nodeTypes={nodeTypes} fitView fitViewOptions={{ padding: 0.12 }} nodesConnectable={false} proOptions={{ hideAttribution: true }} minZoom={0.3} zoomOnScroll={false} onNodeClick={(_, n) => n.id.startsWith("act:") && onSelect?.(n.id.slice(4))}>
+        <ReactFlow key={nodes.length} nodes={nodes} edges={edges} nodeTypes={nodeTypes} fitView fitViewOptions={{ padding: 0.12 }} nodesConnectable={false} proOptions={{ hideAttribution: true }} minZoom={0.3} zoomOnScroll={false} onNodeClick={(_, n) => n.id.startsWith("act:") && onSelect?.(n.id.slice(4))}>
           <Background color="var(--line)" gap={22} />
         </ReactFlow>
       </div>

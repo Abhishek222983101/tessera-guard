@@ -17,7 +17,7 @@ export default function RiskGauge({ risk, size = 180, showBand = true }: { risk:
         <path d="M14 62 A46 46 0 0 1 106 62" fill="none" stroke={col} strokeWidth="7" strokeLinecap="round" strokeDasharray={C} strokeDashoffset={off} style={{ transition: "stroke-dashoffset 500ms ease-out, stroke 200ms" }} />
       </svg>
       <div className="-mt-[34%] flex flex-col items-center leading-none">
-        <NumberFlow value={Math.round(r)} className="tnum font-semibold tracking-tight" style={{ fontSize: size * 0.3, color: col }} />
+        <NumberFlow value={Math.round(r)} animated={false} className="tnum font-semibold tracking-tight" style={{ fontSize: size * 0.3, color: col }} />
         {showBand && <span className="mt-1.5 text-[13px] font-medium" style={{ color: col }}>{bandLabel(band)}</span>}
       </div>
     </div>

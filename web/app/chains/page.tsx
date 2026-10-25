@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { toast } from "sonner";
 import IsoChain from "@/components/landing/IsoChain";
 import { useApi } from "@/lib/useApiB";
 import { post, ApiError } from "@/lib/api";
@@ -19,11 +20,11 @@ export default function Chains() {
   const run = useStore((s) => (runId ? s.runs[runId] : undefined));
   async function act(kind: "run" | "freeze") {
     setBusy(kind); setMsg(null);
-    try { if (kind === "run") { const r = await post<{ run_id: string }>("/scenarios/S6/run", { pace: 0.4 }); setRunId(r.run_id); markDone("chain"); [1500, 4000, 7000].forEach((t) => setTimeout(reload, t)); } else { await post("/chains/freeze", { patient_zero: g.cascade.patient_zero }); setMsg("Frozen. Patient zero and everyone it handed work to are narrowed."); reload(); } }
+    try { if (kind === "run") { const r = await post<{ run_id: string }>("/scenarios/S6/run", { pace: 0.4 }); setRunId(r.run_id); markDone("chain"); [1500, 4000, 7000].forEach((t) => setTimeout(reload, t)); } else { await post("/chains/freeze", { patient_zero: g.cascade.patient_zero }); setMsg("Frozen. Patient zero and everyone it handed work to are narrowed."); toast.success("Cascade frozen", { description: "Research and Finance are now quarantined (L3)." }); reload(); } }
     catch (e) { setMsg(e instanceof ApiError ? e.message : "That didn't work"); } finally { setBusy(null); }
   }
   const pz = g.nodes.find((n) => n.agent_id === g.cascade.patient_zero);
-  const edge = sel !== null ? g.edges[sel] : null;
+  const edge = (sel !== null ? g.edges[sel] : null) ?? g.edges.find((e) => e.taint === "tainted") ?? null;
   return (
     <div>
       <PageHead title="Agent chains" sub="Where an infection started, and who it reached." right={<>{sample && <SampleBadge />}

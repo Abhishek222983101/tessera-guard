@@ -35,7 +35,7 @@ const INFO: Record<string, { name: string; what: string; expect: string }> = {
 export default function DemoPage() {
   const verdicts = useStore((s) => s.verdicts); const cases = useStore((s) => s.cases); const runs = useStore((s) => s.runs); const conn = useStore((s) => s.conn); const containment = useStore((s) => s.containment); const approvals = useStore((s) => s.approvals);
   const [scen, setScen] = useState<string>("S1"); const [prot, setProt] = useState<Protection>("tessera"); const protRef = useRef<Protection>("tessera");
-  const [view, setView] = useState<"doc" | "graph">("doc"); const [busy, setBusy] = useState(false); const [note, setNote] = useState<string | null>(null);
+  const [view, setView] = useState<"doc" | "graph">("graph"); const [busy, setBusy] = useState(false); const [note, setNote] = useState<string | null>(null);
   const [docs, setDocs] = useState<DocSummary[]>([]); const [detail, setDetail] = useState<Detail | null>(null);
   const [runId, setRunId] = useState<string | null>(null); const [popup, setPopup] = useState<"" | "welcome" | "result">(""); const shownFor = useRef<string | null>(null);
   useEffect(() => { get<DocSummary[]>("/documents").then(setDocs).catch(() => {}); try { if (!localStorage.getItem("tessera.stage.welcome")) setPopup("welcome"); } catch {} }, []);
@@ -58,7 +58,7 @@ export default function DemoPage() {
   useEffect(() => { if (runId && run?.state === "finished" && shownFor.current !== runId) { shownFor.current = runId; setPopup("result"); } }, [run?.state, runId]);
 
   async function start(id: string) {
-    if (busy) return; setBusy(true); setScen(id); setNote(null); resetLocal(); setDetail(null); setView("doc"); if (id === "S1") markDone("run-s1");
+    if (busy) return; setBusy(true); setScen(id); setNote(null); resetLocal(); setDetail(null); setView("graph"); if (id === "S1") markDone("run-s1");
     try { const r = await post<{ run_id: string }>(`/scenarios/${id}/run`, { protection: protRef.current, pace: 0.3 }); setRunId(r.run_id); }
     catch (e) { setNote((e as Error).message + " You can still press Replay to see a recorded run."); }
     finally { setBusy(false); }
@@ -93,16 +93,26 @@ export default function DemoPage() {
         {/* left: scenario + story + evidence viewer */}
         <div className="flex min-w-0 flex-col gap-4">
           <section className="card p-4" aria-label="Scenarios">
-            <div className="mb-3 flex flex-wrap gap-1.5" role="tablist">{Object.entries(INFO).map(([id, m]) => (
-              <button key={id} role="tab" aria-selected={scen === id} onClick={() => setScen(id)} className={`rounded-lg border px-3 py-1.5 text-[14px] transition-colors ${scen === id ? "border-bone bg-panel3 text-bone" : "border-line text-muted hover:text-bone"}`}><span className="mono mr-1.5 text-[12px] text-faint">{id}</span>{m.name}</button>))}</div>
+            <div className="mb-3 flex gap-1.5 overflow-x-auto pb-1" role="tablist">{Object.entries(INFO).map(([id, m]) => (
+              <button key={id} role="tab" aria-selected={scen === id} onClick={() => setScen(id)} className={`shrink-0 rounded-lg border px-3 py-1.5 text-[14px] transition-colors ${scen === id ? "border-bone bg-panel3 text-bone" : "border-line text-muted hover:text-bone"}`}><span className="mono mr-1.5 text-[12px] text-faint">{id}</span>{m.name}</button>))}</div>
             <div className="flex flex-wrap items-center justify-between gap-3">
-              <div className="min-w-0 max-w-xl"><p className="text-[16px] font-medium">{info.what}</p><p className="mt-1 text-[14px] text-muted">You should see: {info.expect}</p></div>
+              <div className="min-w-0 flex-1"><p className="line-clamp-2 text-[15px] font-medium">{info.what}</p><p className="mt-0.5 line-clamp-1 text-[13px] text-muted">You should see: {info.expect}</p></div>
               <div className="flex items-center gap-3"><ProtectionSwitch value={prot} onChange={(v) => { protRef.current = v; setProt(v); }} /><button onClick={() => start(scen)} disabled={busy} className="btn btn-primary !px-5"><Play size={15} fill="currentColor" />{busy ? "Starting" : "Run"}</button></div>
             </div>
             {note && <p role="status" className="mt-3 rounded-lg border border-amber/30 bg-amberbg px-3 py-2 text-[14px] text-amber">{note}</p>}
           </section>
 
-          <section aria-label="Now" aria-live="polite" className="card min-h-[132px] px-5 py-4">
+          <section className="flex flex-col gap-2" aria-label="Evidence">
+            <div className="flex items-center justify-between"><h2 className="text-[15px] font-medium text-muted">{view === "doc" ? "Where it started" : "Flowchart of this run"}</h2>
+              <div role="group" className="flex rounded-lg border border-line p-0.5">{([["graph", Network, "Flow"], ["doc", FileText, "Document"]] as const).map(([v, I, l]) => <button key={v} aria-pressed={view === v} onClick={() => setView(v)} className={`flex items-center gap-1.5 rounded-md px-3 py-1 text-[13px] ${view === v ? "bg-panel3 text-bone" : "text-muted"}`}><I size={13} />{l}</button>)}</div></div>
+            <div className="h-[520px] overflow-y-auto rounded-xl">
+              {view === "graph" ? (verdicts.length === 0 ? <div className="card grid h-full place-items-center p-10 text-center text-[15px] text-muted">Press Run. The flowchart builds itself step by step: where each value came from and what the agent did with it.</div>
+                : <div className="card h-full overflow-hidden"><ProvenanceGraph all verdicts={verdicts.slice(-6)} chunkLabels={Object.fromEntries((shown?.chunks ?? []).map((c) => [c.id, c.label]))} /></div>)
+                : docId && shown ? <DocViewer docId={docId} title={docMeta?.title ?? docId} pages={docMeta?.pages ?? 3} highlights={highlights} activeId={highlights[0]?.id} />
+                  : <div className="card grid h-full place-items-center p-10 text-center text-[15px] text-muted">{verdicts.length ? "No document was involved in this run. The Flow view shows what happened." : "The page the agent read appears here, with the hidden sentence boxed in red."}</div>}
+            </div>
+          </section>
+          <section aria-label="Now" aria-live="polite" className="card min-h-[112px] px-5 py-3.5">
             <div className="mb-1 text-[13px] text-muted">Now</div>
             {!last ? <p className="text-[19px] text-muted">Press Run. Each step of the agent appears here in plain English.</p> : (
               <div className="flex items-start gap-3"><span className="mt-2.5 h-2 w-2 shrink-0 rounded-full" style={{ background: bandColor(last.band) }} />
@@ -110,16 +120,6 @@ export default function DemoPage() {
                   <div className="mt-2 flex flex-wrap items-center gap-2 text-[13px] text-muted"><span>{last.tool}</span><VerdictChip decision={last.decision} compact /><span className="tnum">risk {Math.round(last.risk)}</span></div></div></div>)}
           </section>
 
-          <section className="flex flex-col gap-2" aria-label="Evidence">
-            <div className="flex items-center justify-between"><h2 className="text-[15px] font-medium text-muted">{view === "doc" ? "Where it started" : "How information flowed"}</h2>
-              <div role="group" className="flex rounded-lg border border-line p-0.5">{([["doc", FileText, "Document"], ["graph", Network, "Flow"]] as const).map(([v, I, l]) => <button key={v} aria-pressed={view === v} onClick={() => setView(v)} className={`flex items-center gap-1.5 rounded-md px-3 py-1 text-[13px] ${view === v ? "bg-panel3 text-bone" : "text-muted"}`}><I size={13} />{l}</button>)}</div></div>
-            <div className="h-[460px] overflow-y-auto rounded-xl">
-              {!shown ? <div className="card grid h-full place-items-center p-10 text-center text-[15px] text-muted">The evidence appears here: the page the agent read, with the hidden sentence boxed in red.</div> :
-                view === "doc" && docId ? <DocViewer docId={docId} title={docMeta?.title ?? docId} pages={docMeta?.pages ?? 3} highlights={highlights} activeId={highlights[0]?.id} /> :
-                  view === "graph" ? <div className="card h-full overflow-hidden"><ProvenanceGraph verdicts={shown.verdicts} chunkLabels={Object.fromEntries(shown.chunks.map((c) => [c.id, c.label]))} /></div> :
-                    <div className="card grid h-full place-items-center p-10 text-center text-[15px] text-muted">No document was involved in this run. Press G to see the flow of information instead.</div>}
-            </div>
-          </section>
         </div>
 
         {/* right: scoreboard + steps */}
@@ -156,7 +156,7 @@ export default function DemoPage() {
             <DialogDescription className="text-[15px] text-muted">{info.expect}</DialogDescription>
           </DialogHeader>
           <dl className="grid grid-cols-3 gap-3 text-[13px]">
-            <div className="card-2 p-3"><dt className="text-faint">Hostile steps</dt><dd className="mt-1 text-[20px] font-semibold tnum">{oc.attack_blocked ?? 0}<span className="text-[14px] font-normal text-muted"> / {oc.attack_steps ?? 0} blocked</span></dd></div>
+            <div className="card-2 p-3"><dt className="text-faint">Steps stopped</dt><dd className="mt-1 text-[20px] font-semibold tnum">{verdicts.filter((v) => v.decision !== "ALLOW").length}<span className="text-[14px] font-normal text-muted"> of {verdicts.length} held or blocked</span></dd></div>
             <div className="card-2 p-3"><dt className="text-faint">Real work</dt><dd className="mt-1 text-[20px] font-semibold tnum">{utility ? utility.legit_done : "–"}<span className="text-[14px] font-normal text-muted"> / {utility ? utility.legit_total : "–"} done</span></dd></div>
             <div className="card-2 p-3"><dt className="text-faint">Peak risk</dt><dd className="mt-1 text-[20px] font-semibold tnum" style={{ color: bandColor(peak >= 80 ? "critical" : peak >= 60 ? "high" : peak >= 30 ? "elevated" : "normal") }}>{Math.round(peak)}</dd></div>
           </dl>

@@ -81,7 +81,13 @@ function Inner({ children }: { children: React.ReactNode }) {
           <button onClick={() => setOpen(true)} className="btn btn-ghost shrink-0 whitespace-nowrap !py-1.5 text-[13px]"><CircleHelp size={15} /><span className="hidden sm:inline">Test this page</span><span className="sm:hidden">Test</span></button>
         </div>
         {conn === "offline" && <div role="alert" className="border-b border-blood/30 bg-bloodbg px-6 py-2.5 text-[15px] text-blood">Core offline. Start it with <span className="mono">just up</span>, or open <Link className="underline" href="/demo">Live demo</Link> for the recorded replay.</div>}
-        <div className="mx-auto w-full max-w-[1400px] px-5 py-8 md:px-10">{children}</div>
+        <div className="mx-auto w-full max-w-[1400px] px-5 py-8 md:px-10">{children}
+          {guide && "next" in guide && guide.next && next && (
+            <div className="mt-10 flex flex-wrap items-center justify-between gap-4 rounded-xl border border-line bg-panel px-5 py-4">
+              <div className="min-w-0"><div className="text-[12px] font-medium uppercase tracking-wider text-faint">What next?</div><p className="mt-0.5 text-[15px] text-bone/90">{guide.next}</p></div>
+              <Link href={next.href} className="btn btn-primary shrink-0">Next: {next.label}<ArrowRight size={15} /></Link>
+            </div>)}
+        </div>
       </main>
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetContent side="right" className="w-[420px] max-w-[92vw] overflow-y-auto border-line bg-panel p-0 text-bone">

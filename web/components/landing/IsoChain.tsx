@@ -38,8 +38,8 @@ export default function IsoChain({ nodes, edges, onSelectEdge }: { nodes: IsoNod
                 top={<><text className="ik-label" x={6} y={D - 6}>{n.name.replace(" Agent", "").toUpperCase()}</text><circle className="ik-fill" cx={W - 7} cy={7} r={1.3} /></>}
                 front={<>
                   <rect className="ik-screen" x={5} y={5} width={W - 10} height={H - 14} rx={3} />
-                  <text className="ik-screen-text ik-dim" x={9} y={13} fontSize={5}>{n.pz ? "patient zero" : t ? "received taint" : "healthy"}</text>
-                  <text className="ik-screen-text" x={9} y={21} fontSize={6.2} fill={t ? BAD : OK}>{t ? "TAINTED" : "CLEAN"}</text>
+                  <text className="ik-screen-text ik-dim" x={9} y={13} fontSize={5}>{n.level >= 3 ? "frozen · L" + n.level : n.pz ? "patient zero" : t ? "received taint" : "healthy"}</text>
+                  <text className="ik-screen-text" x={9} y={21} fontSize={6.2} fill={n.level >= 3 ? AMB : t ? BAD : OK}>{n.level >= 3 ? "QUARANTINED" : t ? "TAINTED" : "CLEAN"}</text>
                 </>}
                 side={<Glow on className="lamp-glow"><circle cx={D / 2} cy={9} r={2.3} fill={t ? BAD : n.level >= 3 ? AMB : OK} /></Glow>} />
             </g>
