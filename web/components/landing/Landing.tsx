@@ -38,8 +38,8 @@ export default function Landing() {
             <a href="#standards" className="transition-colors hover:text-bone">Standards</a>
           </nav>
           <div className="flex items-center gap-2">
-            <Link href="/guide" className="btn btn-ghost hidden !py-1.5 sm:inline-flex"><ListChecks size={15} />Start here</Link>
-            <Link href="/fleet" className="btn btn-primary !py-1.5">Open the lab<ArrowRight size={15} /></Link>
+            <Link href="/guide" className="btn btn-ghost whitespace-nowrap !py-1.5 max-sm:!hidden"><ListChecks size={15} />Start here</Link>
+            <Link href="/fleet" className="btn btn-primary whitespace-nowrap !py-1.5">Open the lab<ArrowRight size={15} /></Link>
           </div>
         </div>
       </header>
@@ -49,7 +49,7 @@ export default function Landing() {
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_30%_40%,transparent_0%,var(--background)_75%)]" /></div>
         <div className="mx-auto grid max-w-[1240px] items-center gap-6 px-5 pb-16 pt-14 lg:grid-cols-[1fr_1.15fr] lg:pb-24 lg:pt-20">
           <div>
-            <span className="inline-flex items-center gap-2 rounded-full border border-line2 bg-panel/70 px-3 py-1 text-[13px] text-muted"><ShieldCheck size={14} />D3COY 1.0 · Identity drift in AI agents</span>
+            <span className="inline-flex items-center gap-2 rounded-full border border-line2 bg-panel/70 px-3 py-1 text-[13px] text-muted"><ShieldCheck size={14} /><span>Team Paradigm Shift · D3COY 1.0<span className="hidden sm:inline"> · Identity drift in AI agents</span></span></span>
             <h1 className="mt-6 text-[44px] font-semibold leading-[1.04] tracking-[-0.03em] sm:text-[60px]">
               <span className="font-serif italic font-medium text-muted">Valid token.</span><br />Wrong behaviour.
             </h1>

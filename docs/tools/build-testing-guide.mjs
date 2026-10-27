@@ -8,7 +8,7 @@ for (const [id, name, path, blurb] of order) { const g = PAGE_GUIDES[id]; if (!g
   pages += `\n### ${name}  \`${path}\`\n*${blurb}*\n\n**Goal:** ${g.goal}\n\n**Do this**\n\n${g.steps.map((s, i) => `${i + 1}. ${s}`).join("\n")}\n\n**You should see:** ${g.expect}\n\n**Bugs to look for**\n\n${g.watch.map((w) => `- [ ] ${w}`).join("\n")}\n`; }
 const md = `# TESSERA: Team testing guide
 
-**Team Paradigm · D3COY 1.0 · Problem: Identity Drift Detection in Autonomous AI Agents**
+**Team Paradigm Shift · D3COY 1.0 · Problem: Identity Drift Detection in Autonomous AI Agents**
 Live site: **${URL}** · Code: https://github.com/Abhishek222983101/tessera-guard
 
 This guide tells you what the project is, what every item in the sidebar does, and exactly what to click on every page, what you should see, and what bugs to hunt for. Please test every page and report anything that differs.

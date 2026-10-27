@@ -14,7 +14,7 @@
 ![Tests](https://img.shields.io/badge/tests-39%2F39_passing-brightgreen)
 ![License](https://img.shields.io/badge/license-Apache_2.0-informational)
 
-**Team Paradigm · D3COY 1.0 (DJS ISACA, DJSCE Mumbai) · Problem: *Identity Drift Detection in Autonomous AI Agents***
+**Team Paradigm Shift · D3COY 1.0 (DJS ISACA, DJSCE Mumbai) · Problem: *Identity Drift Detection in Autonomous AI Agents***
 
 </div>
 
@@ -247,7 +247,7 @@ The sandbox never touches the network: all "internet" and company systems are si
 
 ## Contributors
 
-**[Abhishek Tiwari](https://github.com/Abhishek222983101)** — Team Paradigm
+**[Abhishek Tiwari](https://github.com/Abhishek222983101)** — Team Paradigm Shift
 
 ## License
 

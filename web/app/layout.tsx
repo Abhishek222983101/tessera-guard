@@ -8,7 +8,8 @@ import Shell from "@/components/Shell";
 
 export const metadata: Metadata = {
   title: "TESSERA — agent behaviour guard",
-  description: "Catch AI agents that drift from their role while their credentials stay valid.",
+  description: "Catch AI agents that drift from their role while their credentials stay valid. Built by Team Paradigm Shift for D3COY 1.0.",
+  authors: [{ name: "Team Paradigm Shift" }],
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

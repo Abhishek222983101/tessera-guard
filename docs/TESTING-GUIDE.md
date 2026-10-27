@@ -1,6 +1,6 @@
 # TESSERA: Team testing guide
 
-**Team Paradigm · D3COY 1.0 · Problem: Identity Drift Detection in Autonomous AI Agents**
+**Team Paradigm Shift · D3COY 1.0 · Problem: Identity Drift Detection in Autonomous AI Agents**
 Live site: **https://tessera-guard.vercel.app** · Code: https://github.com/Abhishek222983101/tessera-guard
 
 This guide tells you what the project is, what every item in the sidebar does, and exactly what to click on every page, what you should see, and what bugs to hunt for. Please test every page and report anything that differs.

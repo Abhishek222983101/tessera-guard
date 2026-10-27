@@ -1,9 +1,19 @@
 name: keepalive
+# GitHub delays scheduled runs by hours, so each run stays alive for ~5h50m and pings every 4 minutes.
+# Runs overlap a little; the concurrency group cancels nothing, it only stops pile-ups beyond two.
 on:
-  schedule: [{ cron: "*/10 * * * *" }]
+  schedule: [{ cron: "0 */5 * * *" }]
+  push: { branches: [main] }
   workflow_dispatch:
+concurrency: { group: keepalive-${{ github.run_number }}, cancel-in-progress: false }
 jobs:
   ping:
     runs-on: ubuntu-latest
+    timeout-minutes: 355
     steps:
-      - run: curl -fsS --max-time 90 https://tessera-core.onrender.com/health
+      - run: |
+          end=$(( $(date +%s) + 350*60 ))
+          while [ $(date +%s) -lt $end ]; do
+            curl -fsS --max-time 90 https://tessera-core.onrender.com/health -o /dev/null && echo "ok $(date -u +%H:%M)" || echo "miss $(date -u +%H:%M)"
+            sleep 240
+          done
