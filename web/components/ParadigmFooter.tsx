@@ -13,7 +13,7 @@ export default function ParadigmFooter() {
   return (
     <HalftoneWordmarkFooter
       wordmark="paradigm" fontFamily={ff} monoFamily={ff} height="620px" crop={0.0}
-      label="Team Paradigm"
+      label="Team Paradigm Shift"
       meta="Built TESSERA for D3COY 1.0, the DJS ISACA 24-hour cyber hackathon at DJSCE Mumbai. A real monitor watching a simulated company."
       columns={[
         { title: "Product", links: [{ label: "Start here", href: "/guide" }, { label: "Live demo", href: "/demo" }, { label: "Attack Lab", href: "/lab" }, { label: "Stolen token", href: "/hijack" }] },

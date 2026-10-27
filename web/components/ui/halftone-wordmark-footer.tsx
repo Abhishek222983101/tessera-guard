@@ -49,7 +49,7 @@ const HWF_CSS = `
 `
 
 export default function HalftoneWordmarkFooter({
-  wordmark = "paradigm", label = "Team Paradigm", meta = "", columns = [], backToTop = true, palette, dotGap = 6, radius = 80, crop = 0.2, grain = 0.5, interactive = true,
+  wordmark = "paradigm", label = "Team Paradigm Shift", meta = "", columns = [], backToTop = true, palette, dotGap = 6, radius = 80, crop = 0.2, grain = 0.5, interactive = true,
   fontFamily = "Helvetica, Arial, sans-serif", fontWeight = 800, monoFamily = "ui-sans-serif, system-ui, sans-serif", height = "600px", className = "", status,
 }: HalftoneWordmarkFooterProps) {
   const colors = { ...DEFAULT_PALETTE, ...(palette || {}) }
